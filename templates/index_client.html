@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>İstemci - Şifreleme</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+    </head>
+    <body>
+        <h1>İstemci (Şifreleme)</h1>
+        <p>Bir şifreleme yöntemi seç:</p>
+
+        <div class="button-grid">
+            <button class="algo-btn" data-algo="caesar" data-mode="encrypt">Caesar</button>
+            <button class="algo-btn" data-algo="substitution" data-mode="encrypt">Substitution</button>
+            <button class="algo-btn" data-algo="affine" data-mode="encrypt">Affine</button>
+            <button class="algo-btn" data-algo="vigenere" data-mode="encrypt">Vigenere</button>
+            <button class="algo-btn" data-algo="playfair" data-mode="encrypt">Playfair</button>
+            <button class="algo-btn" data-algo="railfence" data-mode="encrypt">Rail Fence</button>
+            <button class="algo-btn" data-algo="rot" data-mode="encrypt">Route</button>
+        </div>
+
+        <p><a href="/server" class="switch">Sunucu (Deşifreleme) sayfasına git →</a></p>
+    </body>
+</html>

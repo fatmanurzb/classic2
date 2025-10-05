@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Substitution Cipher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+</head>
+<body>
+    <h1>Substitution Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+
+    <form method="POST">
+        <label>Metin:</label><br>
+        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+        <label>Anahtar (26 harf):</label><br>
+        <input type="text" name="key" placeholder="Örn: QWERTYUIOPASDFGHJKLZXCVBNM" required value="{{ request.form.get('key', '') }}"><br>
+
+        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
+    </form>
+
+    {% if result %}
+    <div class="result">
+        <h2>Sonuç:</h2>
+        <p>{{ result }}</p>
+    </div>
+    {% endif %}
+
+    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+</body>
+</html>
