@@ -1,25 +1,32 @@
 <!DOCTYPE html>
 <html lang="tr">
   <head>
-    <meta charset="UTF-8">
-    <title>Sunucu - Deşifreleme</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+      <meta charset="UTF-8">
+      <title>Deşifreleme Uygulaması</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   </head>
   <body>
-    <h1>Sunucu (Deşifreleme)</h1>
-    <p>Bir şifreleme yöntemi seç:</p>
+      <h1>Deşifreleme Algoritmaları</h1>
 
-    <div class="button-grid">
-      <button class="algo-btn" data-algo="caesar" data-mode="decrypt">Caesar</button>
-      <button class="algo-btn" data-algo="substitution" data-mode="decrypt">Substitution</button>
-      <button class="algo-btn" data-algo="affine" data-mode="decrypt">Affine</button>
-      <button class="algo-btn" data-algo="vigenere" data-mode="decrypt">Vigenere</button>
-      <button class="algo-btn" data-algo="playfair" data-mode="decrypt">Playfair</button>
-      <button class="algo-btn" data-algo="railfence" data-mode="decrypt">Rail Fence</button>
-      <button class="algo-btn" data-algo="rot" data-mode="decrypt">Route</button>
-    </div>
+      <div class="algo-list">
+          <h2>Mevcut Deşifreleme Yöntemleri</h2>
+          <ul>
+              <li><a href="{{ url_for('decrypt_page', algo='caesar') }}">Caesar Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='substitution') }}">Substitution Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='affine') }}">Affine Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='vigenere') }}">Vigenère Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='playfair') }}">Playfair Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='railfence') }}">Rail Fence Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='rot') }}">ROT Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='columnar') }}">Columnar Transposition Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='polybius') }}">Polybius Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='pigpen') }}">Pigpen Cipher</a></li>
+              <li><a href="{{ url_for('decrypt_page', algo='hill') }}">Hill Cipher</a></li>
+          </ul>
+      </div>
 
-    <p><a href="/" class="switch">← İstemci (Şifreleme) sayfasına dön</a></p>
+      <div class="server-link">
+          <a href="{{ url_for('index_client') }}">Şifreleme (Client)</a>
+      </div>
   </body>
 </html>

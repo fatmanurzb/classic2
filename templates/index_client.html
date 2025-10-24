@@ -2,24 +2,31 @@
 <html lang="tr">
     <head>
         <meta charset="UTF-8">
-        <title>İstemci - Şifreleme</title>
+        <title>Şifreleme Uygulaması</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-        <script src="{{ url_for('static', filename='main.js') }}" defer></script>
     </head>
     <body>
-        <h1>İstemci (Şifreleme)</h1>
-        <p>Bir şifreleme yöntemi seç:</p>
+        <h1>Şifreleme Algoritmaları</h1>
 
-        <div class="button-grid">
-            <button class="algo-btn" data-algo="caesar" data-mode="encrypt">Caesar</button>
-            <button class="algo-btn" data-algo="substitution" data-mode="encrypt">Substitution</button>
-            <button class="algo-btn" data-algo="affine" data-mode="encrypt">Affine</button>
-            <button class="algo-btn" data-algo="vigenere" data-mode="encrypt">Vigenere</button>
-            <button class="algo-btn" data-algo="playfair" data-mode="encrypt">Playfair</button>
-            <button class="algo-btn" data-algo="railfence" data-mode="encrypt">Rail Fence</button>
-            <button class="algo-btn" data-algo="rot" data-mode="encrypt">Route</button>
+        <div class="algo-list">
+            <h2>Mevcut Şifreleme Yöntemleri</h2>
+            <ul>
+                <li><a href="{{ url_for('encrypt_page', algo='caesar') }}">Caesar Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='substitution') }}">Substitution Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='affine') }}">Affine Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='vigenere') }}">Vigenère Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='playfair') }}">Playfair Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='railfence') }}">Rail Fence Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='rot') }}">Route Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='columnar') }}">Columnar Transposition Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='polybius') }}">Polybius Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='pigpen') }}">Pigpen Cipher</a></li>
+                <li><a href="{{ url_for('encrypt_page', algo='hill') }}">Hill Cipher</a></li>
+            </ul>
         </div>
 
-        <p><a href="/server" class="switch">Sunucu (Deşifreleme) sayfasına git →</a></p>
+        <div class="server-link">
+            <a href="{{ url_for('index_server') }}">Deşifreleme (Server)</a>
+        </div>
     </body>
 </html>

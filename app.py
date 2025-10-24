@@ -1,8 +1,10 @@
 from flask import Flask, render_template, request
 from ciphers import caesar, substitution, affine, vigenere, playfair, railfence, rot
+from ciphers import columnar, polybius, pigpen, hill  # yeni eklenen cipher modülleri
 
 app = Flask(__name__)
 
+# Tüm algoritmalar burada birleştirildi
 algorithms = {
     'caesar': caesar,
     'substitution': substitution,
@@ -10,20 +12,24 @@ algorithms = {
     'vigenere': vigenere,
     'playfair': playfair,
     'railfence': railfence,
-    'rot': rot
+    'rot': rot,
+    'columnar': columnar,
+    'polybius': polybius,
+    'pigpen': pigpen,
+    'hill': hill
 }
 
-# Ana sayfa - şifreleme
+# Ana sayfa - Şifreleme
 @app.route('/')
 def index_client():
     return render_template('index_client.html')
 
-# Sunucu - deşifreleme
+# Sunucu - Deşifreleme
 @app.route('/server')
 def index_server():
     return render_template('index_server.html')
 
-# Şifreleme sayfaları (GET ve POST)
+# Şifreleme sayfaları (GET & POST)
 @app.route('/<algo>', methods=['GET', 'POST'])
 def encrypt_page(algo):
     if algo not in algorithms:
@@ -31,7 +37,7 @@ def encrypt_page(algo):
 
     result = ''
     if request.method == 'POST':
-        text = request.form['text']
+        text = request.form.get('text', '')
         key = request.form.get('key', '')
         a = request.form.get('a', '')
         b = request.form.get('b', '')
@@ -39,13 +45,23 @@ def encrypt_page(algo):
         shift = request.form.get('shift', '')
         n = request.form.get('n', '')
 
-        # Algoritmaya göre parametreleri geçir
         params = {'key': key, 'a': a, 'b': b, 'k': k, 'shift': shift, 'n': n}
-        result = algorithms[algo].encrypt(text, params)
+
+        if algo == 'columnar':
+            result = algorithms[algo].encrypt(text, key)
+        elif algo == 'polybius':
+            result = algorithms[algo].encrypt(text)
+        elif algo == 'pigpen':
+            result = algorithms[algo].encrypt(text)
+        elif algo == 'hill':
+            key_values = key.split() if key else []
+            result = algorithms[algo].encrypt(text, key_values)
+        else:
+            result = algorithms[algo].encrypt(text, params)
 
     return render_template(f'{algo}.html', result=result, mode='encrypt')
 
-# Deşifreleme sayfaları (GET ve POST)
+# Deşifreleme sayfaları (GET & POST)
 @app.route('/server/<algo>', methods=['GET', 'POST'])
 def decrypt_page(algo):
     if algo not in algorithms:
@@ -53,7 +69,7 @@ def decrypt_page(algo):
 
     result = ''
     if request.method == 'POST':
-        text = request.form['text']
+        text = request.form.get('text', '')
         key = request.form.get('key', '')
         a = request.form.get('a', '')
         b = request.form.get('b', '')
@@ -62,7 +78,18 @@ def decrypt_page(algo):
         n = request.form.get('n', '')
 
         params = {'key': key, 'a': a, 'b': b, 'k': k, 'shift': shift, 'n': n}
-        result = algorithms[algo].decrypt(text, params)
+
+        if algo == 'columnar':
+            result = algorithms[algo].decrypt(text, key)
+        elif algo == 'polybius':
+            result = algorithms[algo].decrypt(text)
+        elif algo == 'pigpen':
+            result = algorithms[algo].decrypt(text)
+        elif algo == 'hill':
+            key_values = key.split() if key else []
+            result = algorithms[algo].decrypt(text, key_values)
+        else:
+            result = algorithms[algo].decrypt(text, params)
 
     return render_template(f'{algo}.html', result=result, mode='decrypt')
 

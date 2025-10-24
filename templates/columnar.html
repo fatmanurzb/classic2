@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <title>Columnar Transposition Cipher</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    </head>
+    <body>
+        <h1>Columnar Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+
+        <form method="POST">
+            <label>Metin:</label><br>
+            <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+            <label>Anahtar:</label><br>
+            <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
+
+            <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
+        </form>
+
+        {% if result %}
+        <div class="result">
+            <h2>Sonuç:</h2>
+            <p>{{ result }}</p>
+        </div>
+        {% endif %}
+
+        <a href="/" class="switch">← Geri dön</a>
+    </body>
+</html>
