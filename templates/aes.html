@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>AES Şifreleme</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>AES-128 Şifreleme / Deşifreleme</h1>
+
+<form method="post">
+    <label>Metin</label>
+    <textarea name="text" required></textarea>
+
+    <label>Anahtar (16 byte)</label>
+    <input type="text" name="key" placeholder="16 karakter">
+
+    <button type="submit">Şifrele</button>
+</form>
+
+{% if result %}
+<div class="result">
+    <h3>Sonuç</h3>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<a class="switch" href="/">Ana Menü</a>
+
+</body>
+</html>

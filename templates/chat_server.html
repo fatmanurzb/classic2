@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Server Chat</title>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='chat.js') }}" defer></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <h1>Sunucu Chat Paneli</h1>
+
+    <p>
+    Bu panel, istemciden gelen mesajları ve çözümlenmiş içerikleri
+    izlemek amacıyla kullanılır.
+    </p>
+
+    <div id="messages" class="chat-box"></div>
+
+</body>
+</html>

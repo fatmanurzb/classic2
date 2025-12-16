@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>RSA Anahtar Dağıtımı</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>RSA (Anahtar Dağıtımı)</h1>
+
+<p>
+Bu sayfada RSA algoritması, simetrik şifreleme anahtarlarının
+güvenli iletimi amacıyla kullanılmaktadır.
+</p>
+
+<form method="post">
+    <label>Simetrik Anahtar (AES / DES)</label>
+    <input type="text" name="key" required>
+
+    <button type="submit">RSA ile Şifrele</button>
+</form>
+
+{% if encrypted %}
+<div class="result">
+    <h3>RSA ile Şifrelenmiş Anahtar</h3>
+    <p>{{ encrypted }}</p>
+</div>
+{% endif %}
+
+<a class="switch" href="/">Ana Menü</a>
+
+</body>
+</html>
