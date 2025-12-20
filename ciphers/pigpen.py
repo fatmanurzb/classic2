@@ -1,24 +1,27 @@
-# ciphers/pigpen.py
-# Gerçek semboller yerine ASCII karakterlerle temsil
+from .base import BaseCipher
 
-_map = {
- 'A':'!', 'B':'@', 'C':'#', 'D':'$', 'E':'%',
- 'F':'^', 'G':'&', 'H':'*', 'I':'(', 'J':')',
- 'K':'-','L':'=','M':'+','N':'[','O':']',
- 'P':'{','Q':'}','R':';','S':':','T':'<',
- 'U':'>','V':'?','W':'/','X':'//','Y':'|','Z':'~'
-}
-_rev = {v:k for k,v in _map.items()}
+class PigpenCipher(BaseCipher):
+    def __init__(self):
+        self._map = {
+            'A':'!', 'B':'@', 'C':'#', 'D':'$', 'E':'%',
+            'F':'^', 'G':'&', 'H':'*', 'I':'(', 'J':')',
+            'K':'-','L':'=','M':'+','N':'[','O':']',
+            'P':'{','Q':'}','R':';','S':':','T':'<',
+            'U':'>','V':'?','W':'/','X':'//','Y':'|','Z':'~'
+        }
+        self._rev = {v: k for k, v in self._map.items()}
 
-def encrypt(text: str):
-    out = []
-    for ch in text.upper():
-        if ch.isalpha():
-            out.append(_map.get(ch, ''))
-    return ''.join(out)
+    def encrypt(self, text, key=None):
+        out = []
+        for ch in text.upper():
+            if ch.isalpha():
+                out.append(self._map.get(ch, ''))
+            else:
+                out.append(ch)
+        return ''.join(out)
 
-def decrypt(ciphertext: str):
-    out = []
-    for ch in ciphertext:
-        out.append(_rev.get(ch, ''))
-    return ''.join(out)
+    def decrypt(self, text, key=None):
+        out = []
+        for ch in text:
+            out.append(self._rev.get(ch, ch))
+        return ''.join(out)

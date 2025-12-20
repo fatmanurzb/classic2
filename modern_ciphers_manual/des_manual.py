@@ -29,7 +29,7 @@ def unpad(text):
     return text.rstrip(text[-1])
 
 
-def encrypt(text, key):
+def des_manual_encrypt(text, key):
     text = pad(text)
     subkeys = generate_subkeys(key)
     result = ""
@@ -50,7 +50,7 @@ def encrypt(text, key):
     return result
 
 
-def decrypt(cipher, key):
+def des_manual_decrypt(cipher, key):
     subkeys = generate_subkeys(key)
     result = ""
 

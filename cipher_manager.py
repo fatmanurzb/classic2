@@ -12,50 +12,29 @@ from ciphers.substitution import SubstitutionCipher
 from ciphers.pigpen import PigpenCipher
 
 
-def encrypt_message(cipher, text, key):
-    cipher = cipher.lower()
+class CipherManager:
 
-    if cipher == "none":
-        return text
+    def __init__(self):
+        self.ciphers = {
+            "caesar": CaesarCipher(),
+            "vigenere": VigenereCipher(),
+            "affine": AffineCipher(),
+            "columnar": ColumnarCipher(),
+            "railfance": RailFenceCipher(),
+            "playfair": PlayfairCipher(),
+            "hill": HillCipher(),
+            "polybius": PolybiusCipher(),
+            "rot": RotCipher(),
+            "substitution": SubstitutionCipher(),
+            "pigpen": PigpenCipher(),
+    }
 
-    try:
-        if cipher == "caesar":
-            shift = int(key) if key else 3
-            return CaesarCipher(shift).encrypt(text)
+    def encrypt(self, algo, text, key=None):
+        if algo not in self.ciphers:
+            raise ValueError("Geçersiz algoritma")
+        return self.ciphers[algo].encrypt(text, key)
 
-        if cipher == "vigenere":
-            return VigenereCipher(key).encrypt(text)
-
-        if cipher == "affine":
-            a, b = map(int, key.split(",")) if "," in key else (5, 8)
-            return AffineCipher(a, b).encrypt(text)
-
-        if cipher == "columnar":
-            return ColumnarCipher(key).encrypt(text)
-
-        if cipher == "railfence":
-            rails = int(key) if key else 3
-            return RailFenceCipher(rails).encrypt(text)
-
-        if cipher == "playfair":
-            return PlayfairCipher(key).encrypt(text)
-
-        if cipher == "hill":
-            return HillCipher(key).encrypt(text)
-
-        if cipher == "polybius":
-            return PolybiusCipher().encrypt(text)
-
-        if cipher == "rot":
-            return RotCipher().encrypt(text)
-
-        if cipher == "substitution":
-            return SubstitutionCipher(key).encrypt(text)
-
-        if cipher == "pigpen":
-            return PigpenCipher().encrypt(text)
-
-    except Exception as e:
-        return f"[Şifreleme Hatası: {e}]"
-
-    return text
+    def decrypt(self, algo, text, key=None):
+        if algo not in self.ciphers:
+            raise ValueError("Geçersiz algoritma")
+        return self.ciphers[algo].decrypt(text, key)

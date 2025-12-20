@@ -1,51 +1,78 @@
-# ciphers/columnar.py
 import math
+from typing import Optional
+from .base import BaseCipher
 
-def _key_order(key: str):
-    indexed = sorted([(ch, i) for i, ch in enumerate(key)], key=lambda x: (x[0], x[1]))
-    order = [None] * len(key)
-    for rank, (_, orig_i) in enumerate(indexed):
-        order[orig_i] = rank
-    return order
 
-def encrypt(plaintext: str, key: str):
-    if not key:
-        return "Anahtar gerekli!"
-    text = ''.join(plaintext.split())  # boşlukları kaldır
-    cols = len(key)
-    rows = math.ceil(len(text) / cols)
-    matrix = [['X'] * cols for _ in range(rows)]
-    idx = 0
-    for r in range(rows):
-        for c in range(cols):
-            if idx < len(text):
-                matrix[r][c] = text[idx]
-                idx += 1
-    order = _key_order(key)
-    cols_by_rank = sorted(range(cols), key=lambda i: order[i])
-    ciphertext = ''
-    for c in cols_by_rank:
+class ColumnarCipher(BaseCipher):
+
+    def _key_order(self, key: str):
+        """
+        Anahtar harflerine göre sütun sıralaması üretir.
+        Örn: ZEBRA -> [4,1,3,2,0]
+        """
+        return sorted(range(len(key)), key=lambda i: (key[i], i))
+
+    def encrypt(self, text: str, key: Optional[str] = None):
+        if not key:
+            return "Anahtar gerekli!"
+
+        key = key.upper()
+        text = ''.join(text.split())
+
+        cols = len(key)
+        rows = math.ceil(len(text) / cols)
+
+        # Matris oluştur
+        matrix = [['X'] * cols for _ in range(rows)]
+
+        idx = 0
         for r in range(rows):
-            ciphertext += matrix[r][c]
-    return ciphertext
+            for c in range(cols):
+                if idx < len(text):
+                    matrix[r][c] = text[idx]
+                    idx += 1
 
-def decrypt(ciphertext: str, key: str):
-    if not key:
-        return "Anahtar gerekli!"
-    cols = len(key)
-    rows = math.ceil(len(ciphertext) / cols)
-    order = _key_order(key)
-    col_lens = [rows] * cols
-    cols_by_rank = sorted(range(cols), key=lambda i: order[i])
-    start = 0
-    col_strings = [None] * cols
-    for c in cols_by_rank:
-        l = col_lens[c]
-        col_strings[c] = ciphertext[start:start+l]
-        start += l
-    plaintext = ''
-    for r in range(rows):
-        for c in range(cols):
-            if r < len(col_strings[c]):
-                plaintext += col_strings[c][r]
-    return plaintext.rstrip('X')
+        # Sütunları anahtar sırasına göre oku
+        order = self._key_order(key)
+        ciphertext = ""
+
+        for c in order:
+            for r in range(rows):
+                ciphertext += matrix[r][c]
+
+        return ciphertext
+
+    def decrypt(self, text: str, key: Optional[str] = None):
+        if not key:
+            return "Anahtar gerekli!"
+
+        key = key.upper()
+        cols = len(key)
+        rows = math.ceil(len(text) / cols)
+
+        order = self._key_order(key)
+
+        # Her sütunun alacağı karakter sayısı
+        full_cols = len(text) % cols
+        col_lengths = [rows] * cols
+        if full_cols != 0:
+            for i in range(cols):
+                if order.index(i) >= full_cols:
+                    col_lengths[i] -= 1
+
+        # Sütunları doldur
+        columns = [''] * cols
+        idx = 0
+        for c in order:
+            length = col_lengths[c]
+            columns[c] = text[idx:idx + length]
+            idx += length
+
+        # Satır satır oku
+        plaintext = ""
+        for r in range(rows):
+            for c in range(cols):
+                if r < len(columns[c]):
+                    plaintext += columns[c][r]
+
+        return plaintext.rstrip('X')

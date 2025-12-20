@@ -2,60 +2,76 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Client Chat</title>
-
+    <title>Chat - Client</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
     <script src="{{ url_for('static', filename='chat.js') }}" defer></script>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-<h1>Client Chat</h1>
+<div class="chat-container">
 
-<div id="messages" class="chat-box"></div>
+    <h1>Chat Sistemi</h1>
 
-<!-- Klasik Şifreleme -->
-<h2>Klasik Şifreleme</h2>
+    <div class="tab-buttons">
+        <button class="tab-btn">Klasik Chat</button>
+        <button class="tab-btn ">Secure Chat</button>
+    </div>
 
-<div class="chat-controls">
-    <select id="cipher">
-        <option value="none">Şifresiz</option>
-        <option value="caesar">Caesar</option>
-        <option value="vigenere">Vigenere</option>
-        <option value="affine">Affine</option>
-        <option value="columnar">Columnar</option>
-        <option value="railfence">RailFence</option>
-        <option value="playfair">Playfair</option>
-        <option value="hill">Hill</option>
-        <option value="polybius">Polybius</option>
-        <option value="rot">ROT</option>
-        <option value="substitution">Substitution</option>
-        <option value="pigpen">Pigpen</option>
-    </select>
+    <!-- Klasik Chat -->
+    <div id="classicTab" class="chat-tab active">
+        <div id="messages" class="chat-box"></div>
 
-    <input id="keyInput" type="text" placeholder="Anahtar / Shift / Parametre">
+        <div class="input-row">
+            <select id="cipher">
+                <option value="none">Şifresiz</option>
+                <option value="caesar">Caesar</option>
+                <option value="vigenere">Vigenere</option>
+                <option value="affine">Affine</option>
+                <option value="columnar">Columnar</option>
+                <option value="railfence">RailFence</option>
+                <option value="playfair">Playfair</option>
+                <option value="hill">Hill</option>
+                <option value="polybius">Polybius</option>
+                <option value="rot">ROT</option>
+                <option value="substitution">Substitution</option>
+                <option value="pigpen">Pigpen</option>
+            </select>
+
+            <input id="keyInput" type="text" placeholder="Anahtar / Shift / Parametre">
+            <input id="msgInput" type="text" placeholder="Mesaj yaz...">
+            <button id="sendBtn" class="btn-primary">Gönder</button>
+        </div>
+    </div>
+
+    <!-- Secure Chat -->
+    <div id="secureTab" class="chat-tab">
+        <div class="input-row">
+            <select id="secureAlgo">
+                <option value="AES">AES</option>
+                <option value="DES">DES</option>
+                <option value="RSA">RSA (Key Exchange)</option>
+                <option value="AES_MANUAL">AES Manual</option>
+                <option value="DES_MANUAL">DES Manual</option>
+            </select>
+
+            <input id="msgSecureInput" type="text" placeholder="Mesaj yaz...">
+            <button id="secureSendBtn" class="btn-primary">Gönder</button>
+        </div>
+    </div>
+
 </div>
 
-<!-- Secure Şifreleme -->
-<h2>Secure Şifreleme (AES / DES)</h2>
+<script>
+function openTab(tab) {
+    document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
 
-<div class="chat-controls">
-    <select id="secureAlgo">
-        <option value="AES">AES (Kütüphaneli)</option>
-        <option value="DES">DES (Kütüphaneli)</option>
-        <option value="AES_MANUAL">AES (Manuel)</option>
-        <option value="DES_MANUAL">DES (Manuel)</option>
-    </select>
-</div>
-
-<!-- Mesaj -->
-<div class="chat-controls">
-    <input id="msgInput" type="text" placeholder="Mesaj yaz...">
-    <button id="sendBtn">Gönder (Klasik)</button>
-    <button id="secureSendBtn">Gönder (Secure)</button>
-</div>
+    document.getElementById(tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+</script>
 
 </body>
 </html>

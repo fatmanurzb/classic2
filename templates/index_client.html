@@ -2,95 +2,51 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Şifreleme + Chat Sistemi</title>
+    <title>Kriptoloji - Ana Sayfa</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <script defer src="{{ url_for('static', filename='chat.js') }}"></script>
 </head>
-
 <body>
 
-<h1>Hoş Geldin</h1>
+<div class="container">
 
-<!-- ============================= -->
-<!--     ANA MENÜ (ŞİFRELEME)     -->
-<!-- ============================= -->
-<div id="encryptMenu">
-    <h2>Şifreleme Algoritmaları</h2>
+    <h1 class="page-title">Kriptoloji</h1>
+    <p class="subtitle">
+        Klasik ve modern şifreleme algoritmalarını deneyimleyin
+    </p>
 
-    <ul>
-        <li><a href="{{ url_for('encrypt_page', algo='caesar') }}">Caesar Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='substitution') }}">Substitution Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='affine') }}">Affine Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='vigenere') }}">Vigenère Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='playfair') }}">Playfair Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='railfence') }}">Rail Fence Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='rot') }}">ROT Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='columnar') }}">Columnar Transposition</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='polybius') }}">Polybius Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='pigpen') }}">Pigpen Cipher</a></li>
-        <li><a href="{{ url_for('encrypt_page', algo='hill') }}">Hill Cipher</a></li>
-    </ul>
+    <!-- ================= KLASİK ŞİFRELER ================= -->
+    <h2 class="section-title">Klasik Şifreleme Yöntemleri</h2>
 
-    <button id="openChat" style="margin-top:20px;">💬 Gerçek Zamanlı Chat Sistemine Geç</button>
+    <div class="card-grid">
+        <a class="card" href="{{ url_for('encrypt_page', algo='caesar') }}">Caesar Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='substitution') }}">Substitution Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='affine') }}">Affine Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='vigenere') }}">Vigenère Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='playfair') }}">Playfair Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='railfence') }}">Rail Fence Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='rot') }}">ROT Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='columnar') }}">Columnar Transposition</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='polybius') }}">Polybius Square</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='pigpen') }}">Pigpen Cipher</a>
+        <a class="card" href="{{ url_for('encrypt_page', algo='hill') }}">Hill Cipher</a>
+    </div>
+
+    <!-- ================= MODERN ŞİFRELER ================= -->
+    <h2 class="section-title">Modern Kriptografi</h2>
+
+    <div class="card-grid">
+        <a class="card modern" href="{{ url_for('aes_page') }}">AES (Simetrik)</a>
+        <a class="card modern" href="{{ url_for('des_page') }}">DES (Simetrik)</a>
+        <a class="card modern" href="{{ url_for('rsa_page') }}">RSA (Anahtar Dağıtımı)</a>
+    </div>
+
+    <!-- ================= ALT BUTONLAR ================= -->
+    <div class="bottom-links">
+        <a class="btn-secondary" href="{{ url_for('chat_client') }}">Chat Uygulaması</a>
+        <a class="btn-secondary" href="{{ url_for('index_server') }}">Deşifrelemelere Git</a>
+    </div>
+
 </div>
-
-
-<!-- ============================== -->
-<!--          CHAT BÖLÜMÜ          -->
-<!-- ============================== -->
-<div id="chatSection" style="display:none; margin-top:20px;">
-
-    <h2>Gerçek Zamanlı Chat</h2>
-
-    <div id="messages" style="
-        border: 1px solid #333;
-        height: 250px;
-        overflow-y: auto;
-        padding: 10px;
-        margin-bottom: 10px;
-    "></div>
-
-    <select id="cipher">
-        <option value="none">Şifresiz</option>
-        <option value="caesar">Caesar</option>
-        <option value="vigenere">Vigenere</option>
-        <option value="affine">Affine</option>
-        <option value="railfence">RailFence</option>
-        <option value="columnar">Columnar</option>
-        <option value="playfair">Playfair</option>
-        <option value="hill">Hill</option>
-        <option value="polybius">Polybius</option>
-        <option value="rot">ROT</option>
-        <option value="substitution">Substitution</option>
-        <option value="pigpen">Pigpen</option>
-    </select>
-
-    <input id="keyInput" type="text" placeholder="Anahtar">
-
-    <input id="msgInput" type="text" placeholder="Mesaj yaz...">
-    <button id="sendBtn">Gönder</button>
-
-    <br><br>
-
-    <button id="backToMenu">⬅ Şifreleme Menüsüne Dön</button>
-</div>
-
-
-<!-- ============================== -->
-<!--      SAYFAYI YÖNETEN JS       -->
-<!-- ============================== -->
-<script>
-document.getElementById("openChat").onclick = () => {
-    document.getElementById("encryptMenu").style.display = "none";
-    document.getElementById("chatSection").style.display = "block";
-};
-
-document.getElementById("backToMenu").onclick = () => {
-    document.getElementById("chatSection").style.display = "none";
-    document.getElementById("encryptMenu").style.display = "block";
-};
-</script>
 
 </body>
 </html>

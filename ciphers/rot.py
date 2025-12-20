@@ -1,84 +1,97 @@
-def encrypt(text, params):
-    try:
-        n = int(params['n'])  # kullanıcı girişi zorunlu
-    except (KeyError, ValueError, TypeError):
-        return "Hata: Lütfen geçerli bir yatay uzunluk girin."
-
-    if n <= 0:
-        return "Hata: Yatay uzunluk pozitif olmalı."
-
-    text = text.replace(" ", "")  # boşlukları kaldır
-    total_len = len(text)
-    rows = (total_len + n - 1) // n
-    matrix = [['*' for _ in range(n)] for _ in range(rows)]
-
-    idx = 0
-    top, left = 0, 0
-    bottom, right = rows - 1, n - 1
-
-    while top <= bottom and left <= right:
-        for i in range(left, right + 1):
-            if idx < total_len:
-                matrix[top][i] = text[idx]
-                idx += 1
-        top += 1
-        for i in range(top, bottom + 1):
-            if idx < total_len:
-                matrix[i][right] = text[idx]
-                idx += 1
-        right -= 1
-        for i in range(right, left - 1, -1):
-            if idx < total_len:
-                matrix[bottom][i] = text[idx]
-                idx += 1
-        bottom -= 1
-        for i in range(bottom, top - 1, -1):
-            if idx < total_len:
-                matrix[i][left] = text[idx]
-                idx += 1
-        left += 1
-
-    result = ''.join(''.join(row) for row in matrix)
-    return result
+from .base import BaseCipher
 
 
-def decrypt(text, params):
-    try:
-        n = int(params['n'])
-    except (KeyError, ValueError, TypeError):
-        return "Hata: Lütfen geçerli bir yatay uzunluk girin."
+class RotCipher(BaseCipher):
 
-    if n <= 0:
-        return "Hata: Yatay uzunluk pozitif olmalı."
+    def _get_n(self, key):
+        try:
+            n = int(key)
+            if n <= 0:
+                return None
+            return n
+        except (ValueError, TypeError):
+            return None
 
-    total_len = len(text)
-    rows = (total_len + n - 1) // n
-    matrix = [['*' for _ in range(n)] for _ in range(rows)]
+    def encrypt(self, text, key=None):
+        n = self._get_n(key)
+        if n is None:
+            return "Hata: Lütfen geçerli bir yatay uzunluk girin."
 
-    idx = 0
-    for r in range(rows):
-        for c in range(n):
-            if idx < total_len:
-                matrix[r][c] = text[idx]
-                idx += 1
+        text = text.replace(" ", "")
+        total_len = len(text)
+        rows = (total_len + n - 1) // n
 
-    result = ''
-    top, left = 0, 0
-    bottom, right = rows - 1, n - 1
+        matrix = [['*'] * n for _ in range(rows)]
 
-    while top <= bottom and left <= right:
-        # saat yönünün tersine spiral okuma
-        for i in range(bottom, top - 1, -1):
-            result += matrix[i][left]
-        left += 1
-        for i in range(left, right + 1):
-            result += matrix[bottom][i]
-        bottom -= 1
-        for i in range(bottom, top - 1, -1):
-            result += matrix[i][right]
-        right -= 1
-        for i in range(right, left - 1, -1):
-            result += matrix[top][i]
-        top += 1
+        idx = 0
+        top, left = 0, 0
+        bottom, right = rows - 1, n - 1
 
-    return result
+        # Saat yönünde spiral doldurma
+        while top <= bottom and left <= right:
+            for i in range(left, right + 1):
+                if idx < total_len:
+                    matrix[top][i] = text[idx]
+                    idx += 1
+            top += 1
+
+            for i in range(top, bottom + 1):
+                if idx < total_len:
+                    matrix[i][right] = text[idx]
+                    idx += 1
+            right -= 1
+
+            for i in range(right, left - 1, -1):
+                if idx < total_len:
+                    matrix[bottom][i] = text[idx]
+                    idx += 1
+            bottom -= 1
+
+            for i in range(bottom, top - 1, -1):
+                if idx < total_len:
+                    matrix[i][left] = text[idx]
+                    idx += 1
+            left += 1
+
+        return ''.join(''.join(row) for row in matrix)
+
+    def decrypt(self, text, key=None):
+        n = self._get_n(key)
+        if n is None:
+            return "Hata: Lütfen geçerli bir yatay uzunluk girin."
+
+        total_len = len(text)
+        rows = (total_len + n - 1) // n
+
+        matrix = [['*'] * n for _ in range(rows)]
+
+        idx = 0
+        for r in range(rows):
+            for c in range(n):
+                if idx < total_len:
+                    matrix[r][c] = text[idx]
+                    idx += 1
+
+        result = []
+        top, left = 0, 0
+        bottom, right = rows - 1, n - 1
+
+        # Saat yönünün tersine spiral okuma
+        while top <= bottom and left <= right:
+            for i in range(bottom, top - 1, -1):
+                result.append(matrix[i][left])
+            left += 1
+
+            for i in range(left, right + 1):
+                result.append(matrix[bottom][i])
+            bottom -= 1
+
+            for i in range(bottom, top - 1, -1):
+                result.append(matrix[i][right])
+            right -= 1
+
+            for i in range(right, left - 1, -1):
+                result.append(matrix[top][i])
+            top += 1
+
+        return ''.join(result)

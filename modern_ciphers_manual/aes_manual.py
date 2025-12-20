@@ -51,7 +51,7 @@ def unpad(text):
     return text.rstrip(text[-1])
 
 
-def encrypt(text, key):
+def aes_manual_encrypt(text, key):
     """
     text: string
     key: string (16 byte önerilir)
@@ -76,7 +76,7 @@ def encrypt(text, key):
     return result
 
 
-def decrypt(cipher, key):
+def aes_manual_decrypt(cipher, key):
     key_bytes = [ord(c) for c in key.ljust(16)[:16]]
     result = ""
 
