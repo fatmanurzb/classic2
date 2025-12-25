@@ -1,6 +1,3 @@
-# ============================================
-# SIMPLE AES (MANUAL - EDUCATIONAL VERSION)
-# ============================================
 
 # Basit S-Box (gerçek AES S-box DEĞİL)
 S_BOX = {

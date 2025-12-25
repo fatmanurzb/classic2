@@ -2,33 +2,110 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>RSA Anahtar Dağıtımı</title>
+    <title>RSA (Rivest–Shamir–Adleman)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .info-box {
+            background-color: #ffffff;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
-<h1>RSA (Anahtar Dağıtımı)</h1>
+    <div class="info-box">
+        <h1>RSA – Rivest–Shamir–Adleman</h1>
 
-<p>
-Bu sayfada RSA algoritması, simetrik şifreleme anahtarlarının
-güvenli iletimi amacıyla kullanılmaktadır.
-</p>
+        <p class="intro">
+            RSA, günümüzde yaygın olarak kullanılan <strong>asimetric (açık anahtarlı) şifreleme algoritmasıdır</strong>. 
+            Şifreleme ve deşifreleme işlemleri farklı anahtarlarla yapılır: 
+            <strong>açık anahtar</strong> ile şifrelenir, <strong>gizli anahtar</strong> ile çözülür.
+        </p>
 
-<form method="post">
-    <label>Simetrik Anahtar (AES / DES)</label>
-    <input type="text" name="key" required>
+        <hr>
 
-    <button type="submit">RSA ile Şifrele</button>
-</form>
+        <h2>Temel Özellikler</h2>
+        <ul>
+            <li>Asimetrik anahtarlıdır</li>
+            <li>Blok şifreleme algoritmasıdır</li>
+            <li>Anahtar uzunluğu genellikle 1024–4096 bit arasında değişir</li>
+            <li>Küçük mesajları veya simetrik anahtarları güvenli şekilde iletmek için uygundur</li>
+        </ul>
 
-{% if encrypted %}
-<div class="result">
-    <h3>RSA ile Şifrelenmiş Anahtar</h3>
-    <p>{{ encrypted }}</p>
-</div>
-{% endif %}
+        <hr>
 
-<a class="switch" href="/">Ana Menü</a>
+        <h2>RSA Nasıl Çalışır?</h2>
+        <p>
+            RSA, büyük asal sayılar ve matematiksel işlemler kullanır. 
+            Açık anahtar (n, e) ve gizli anahtar (n, d) oluşturulur. 
+            Mesaj, alıcının açık anahtarı ile şifrelenir ve yalnızca gizli anahtar ile çözülebilir.
+        </p>
+
+        <h3>RSA Şifreleme Adımları:</h3>
+        <ol>
+            <li>İki büyük asal sayı p ve q seçilir</li>
+            <li>n = p × q hesaplanır</li>
+            <li>Euler totient φ(n) = (p-1)(q-1) hesaplanır</li>
+            <li>Açık anahtar e seçilir (1 < e < φ(n), gcd(e, φ(n)) = 1)</li>
+            <li>Gizli anahtar d hesaplanır (e × d ≡ 1 mod φ(n))</li>
+            <li>Mesaj m: şifreli metin c = m^e mod n</li>
+            <li>Şifre çözme: m = c^d mod n</li>
+        </ol>
+
+        <hr>
+
+        <h2>RSA Şifreleme & Deşifreleme Mantığı</h2>
+        <pre>
+Mesaj m + Alıcının Açık Anahtarı (n, e)
+          ↓
+        RSA Algoritması
+          ↓
+      Şifreli Metin c
+
+Şifreli Metin c + Gizli Anahtar d
+          ↓
+      RSA Algoritması
+          ↓
+      Orijinal Mesaj m
+        </pre>
+
+        <hr>
+
+        <h2>Güvenlik</h2>
+        <p>
+            RSA’nın güvenliği büyük asal sayıların çarpanlarına ayrılmasının zorluğuna dayanır.
+            Anahtar uzunluğu arttıkça güvenlik yükselir ancak işlem süresi uzar.
+        </p>
+
+        <ul>
+            <li>SSL/TLS ve HTTPS protokollerinde kullanılır</li>
+            <li>Elektronik imza ve dijital sertifikalarda kullanılır</li>
+            <li>Simetrik anahtarların güvenli şekilde paylaşılmasında kullanılır</li>
+        </ul>
+
+        <hr>
+
+        <h2>Projede RSA Kullanımı</h2>
+        <p>
+            Bu projede RSA algoritması:
+        </p>
+        <ul>
+            <li>Kütüphane tabanlı (RSA Lib)</li>
+            <li>Manuel (RSA Manual)</li>
+        </ul>
+
+        <p>
+            Her iki yaklaşımın performans ve çıktı farkları 
+            proje dokümantasyonunda karşılaştırılmıştır.
+        </p>
+
+        <hr>
+
+        <a href="/" class="switch">← Ana Sayfaya Dön</a>
+    </div>
 
 </body>
 </html>

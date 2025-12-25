@@ -6,26 +6,110 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
+
 <body>
-    <h1>Substitution Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>Anahtar (26 harf):</label><br>
-        <input type="text" name="key" placeholder="Örn: QWERTYUIOPASDFGHJKLZXCVBNM" required value="{{ request.form.get('key', '') }}"><br>
-
-        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <p>{{ result }}</p>
-    </div>
+<h1>Substitution Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =======================
+     AÇIKLAMA ALANI
+     ======================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Substitution cipher, alfabedeki her harfin sabit fakat rastgele belirlenmiş
+        başka bir harf ile değiştirilmesi esasına dayanan klasik bir şifreleme yöntemidir.
+    </p>
+
+    <p>
+        Bu algoritmada güvenlik, kullanılan <b>26 harflik anahtar dizisine</b> bağlıdır.
+        Her harf yalnızca bir harf ile eşleştirilir.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        Alfabe: ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>
+        Anahtar: QWERTYUIOPASDFGHJKLZXCVBNM<br>
+        Metin: MERHABA<br>
+        Sonuç: DTKIQWQ
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işlemi, şifrelemede kullanılan anahtar dizisinin
+        ters eşlemesi ile gerçekleştirilir.
+    </p>
+
+    <p>
+        Şifreli metindeki her harf, anahtar dizisindeki karşılığına bakılarak
+        orijinal alfabedeki yerine geri döndürülür.
+    </p>
+
+    <p>
+        <b>Not:</b> Doğru anahtar kullanılmadığı sürece anlamlı bir sonuç elde edilemez.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        Şifreli Metin: DTKIQWQ<br>
+        Anahtar: QWERTYUIOPASDFGHJKLZXCVBNM<br>
+        Çözülmüş Metin: MERHABA
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =======================
+     FORM
+     ======================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Anahtar (26 harf):</label><br>
+    <input type="text"
+           name="key"
+           placeholder="Örn: QWERTYUIOPASDFGHJKLZXCVBNM"
+           required
+           value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =======================
+     SONUÇ
+     ======================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =======================
+     GERİ DÖN
+     ======================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

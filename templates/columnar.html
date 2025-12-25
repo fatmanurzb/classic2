@@ -1,30 +1,134 @@
 <!DOCTYPE html>
 <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Columnar Transposition Cipher</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <h1>Columnar Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Columnar Transposition Cipher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-        <form method="POST">
-            <label>Metin:</label><br>
-            <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+<body>
 
-            <label>Anahtar:</label><br>
-            <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
+<h1>
+    Columnar Transposition Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
+    {% endif %}
+</h1>
 
-            <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-        </form>
+<!-- =========================
+     AÇIKLAMA ALANI
+     ========================= -->
+<div class="info-box">
 
-        {% if result %}
-        <div class="result">
-            <h2>Sonuç:</h2>
-            <p>{{ result }}</p>
-        </div>
+{% if mode == 'encrypt' %}
+
+    <p>
+        Columnar Transposition Cipher, klasik bir
+        <b>yer değiştirme (transposition)</b> şifreleme algoritmasıdır.
+        Harfler değiştirilmez; yalnızca metin içerisindeki
+        <b>sütunlara göre sıralama</b> değiştirilir.
+    </p>
+
+    <p>
+        Bu algoritmada bir anahtar kelime kullanılır.
+        Anahtarın harf sayısı kadar sütun oluşturulur ve
+        metin bu sütunlara satır satır yerleştirilir.
+    </p>
+
+    <h3>Şifreleme Adımları</h3>
+    <ul>
+        <li>Anahtar kelimenin uzunluğu kadar sütun oluşturulur.</li>
+        <li>Metin soldan sağa, satır satır tabloya yazılır.</li>
+        <li>Anahtar harfleri alfabetik olarak sıralanır.</li>
+        <li>Sütunlar, anahtarın alfabetik sırasına göre okunur.</li>
+        <li>Okunan sütunlar birleştirilerek şifreli metin elde edilir.</li>
+    </ul>
+
+    <p>
+        <b>Örnek:</b><br>
+        Metin: <code>HELLOWORLD</code><br>
+        Anahtar: <code>ZEBRA</code><br><br>
+
+        Z &nbsp; E &nbsp; B &nbsp; R &nbsp; A<br>
+        H &nbsp; E &nbsp; L &nbsp; L &nbsp; O<br>
+        W &nbsp; O &nbsp; R &nbsp; L &nbsp; D<br><br>
+
+        Anahtar sırası: A → B → E → R → Z<br>
+        Şifreli çıktı: <code>OD LR EO LL HW</code>
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde,
+        anahtar kelimenin alfabetik sıralaması tekrar kullanılır.
+        Şifreli metin bu sıraya göre sütunlara bölünür.
+    </p>
+
+    <p>
+        Sütunlar orijinal anahtar sırasına geri yerleştirildikten sonra
+        tablo satır satır okunarak
+        orijinal metin elde edilir.
+    </p>
+
+    <h3>Deşifreleme Adımları</h3>
+    <ul>
+        <li>Anahtar harfleri alfabetik olarak sıralanır.</li>
+        <li>Şifreli metin sütunlara bölüştürülür.</li>
+        <li>Sütunlar anahtarın orijinal sırasına yerleştirilir.</li>
+        <li>Tablo satır satır okunarak düz metin elde edilir.</li>
+    </ul>
+
+    <p>
+        Columnar Transposition,
+        anahtar bilinmeden çözülmesi zor olan
+        klasik şifreleme yöntemlerinden biridir
+        ve tarihsel olarak sıkça kullanılmıştır.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =========================
+     FORM
+     ========================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Anahtar (Kelime):</label><br>
+    <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
         {% endif %}
+    </button>
 
-        <a href="/" class="switch">← Geri dön</a>
-    </body>
+</form>
+
+<!-- =========================
+     SONUÇ
+     ========================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =========================
+     GERİ DÖN
+     ========================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
+</body>
 </html>

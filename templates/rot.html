@@ -2,30 +2,122 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>ROT Cipher</title>
+    <title>ROT (Spiral Transposition) Cipher</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
+
 <body>
-    <h1>ROT Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>Yatay Uzunluk (n):</label><br>
-        <input type="number" name="n" required value="{{ request.form.get('n', '') }}"><br>
-
-        <button type="submit">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <pre>{{ result }}</pre>
-    </div>
+<h1>
+    ROT (Spiral Transposition) Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =========================
+     AÇIKLAMA ALANI
+     ========================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+    <p>
+        Bu algoritma, klasik ROT (Caesar) şifrelerinden farklı olarak
+        <b>harf kaydırma</b> değil,
+        <b>yer değiştirme (transposition)</b> mantığı ile çalışır.
+    </p>
+
+    <p>
+        Metin, kullanıcının belirlediği <b>n</b> değeri kadar sütuna sahip
+        bir matrise yerleştirilir ve
+        <b>saat yönünde spiral</b> biçimde doldurulur.
+    </p>
+
+    <h3>Şifreleme Adımları</h3>
+    <ul>
+        <li>Boşluklar metinden kaldırılır.</li>
+        <li>Metin uzunluğuna göre satır sayısı hesaplanır.</li>
+        <li>Metin, matrise saat yönünde spiral olarak yazılır.</li>
+        <li>Şifreli çıktı, matrisin satır satır okunmasıyla elde edilir.</li>
+    </ul>
+
+    <p>
+        <b>Örnek:</b><br>
+        Metin: <code>HELLO</code><br>
+        n = 3<br>
+        Spiral doldurma sonrası matris satır satır okunur ve
+        şifreli metin elde edilir.
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde,
+        şifreli metin önce matrise satır satır yerleştirilir.
+    </p>
+
+    <p>
+        Ardından metin,
+        <b>saat yönünün tersine spiral</b> biçimde okunarak
+        orijinal metin elde edilir.
+    </p>
+
+    <h3>Deşifreleme Adımları</h3>
+    <ul>
+        <li>Şifreli metin, matrise satır satır doldurulur.</li>
+        <li>Matris saat yönünün tersine spiral olarak okunur.</li>
+        <li>Orijinal metin geri elde edilir.</li>
+    </ul>
+
+    <p>
+        Bu algoritma, klasik yerine koyma şifrelerinden farklı olarak
+        harflerin yerini değiştirir ve
+        <b>transposition cipher</b> sınıfına girer.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =========================
+     FORM
+     ========================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Sütun Sayısı (n):</label><br>
+    <input type="text" name="n" required value="{{ request.form.get('n', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =========================
+     SONUÇ
+     ========================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <pre>{{ result }}</pre>
+</div>
+{% endif %}
+
+<!-- =========================
+     GERİ DÖN
+     ========================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

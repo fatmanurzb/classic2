@@ -4,29 +4,125 @@
     <meta charset="UTF-8">
     <title>Playfair Cipher</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
-
 </head>
+
 <body>
-    <h1>Playfair Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>Anahtar (Kelime):</label><br>
-        <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
-
-        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <p>{{ result }}</p>
-    </div>
+<h1>Playfair Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =======================
+     AÇIKLAMA
+     ======================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <h2>Playfair Şifreleme Algoritması</h2>
+
+    <p>
+        Playfair Cipher, ikili harf grupları (digraph) üzerinden çalışan
+        bir simetrik şifreleme algoritmasıdır ve 19. yüzyılda Charles Wheatstone
+        tarafından geliştirilmiştir.
+    </p>
+
+    <p>
+        Algoritma, 5×5 boyutunda bir anahtar matrisi kullanır.
+        Alfabe 25 harfe indirgenir ve genellikle <b>I</b> ve <b>J</b> harfleri
+        birleştirilir.
+    </p>
+
+    <h3>Şifreleme Kuralları</h3>
+    <ul>
+        <li>Metin iki harfli gruplara ayrılır.</li>
+        <li>Aynı harf yan yana gelirse araya genellikle <b>X</b> eklenir.</li>
+        <li>
+            Harfler aynı satırdaysa → sağa kaydırılır.
+        </li>
+        <li>
+            Aynı sütundaysa → aşağı kaydırılır.
+        </li>
+        <li>
+            Dikdörtgen oluşturuyorsa → karşı köşeler alınır.
+        </li>
+    </ul>
+
+    <p>
+        <b>Örnek:</b><br>
+        Anahtar: MONARCHY<br>
+        Metin: HELLO<br>
+        Düzenlenmiş: HE LX LO<br>
+        Şifreli çıktı: <i>örneklenmiş sonuç</i>
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işlemi, şifreleme kurallarının tersine uygulanmasıyla yapılır.
+        Aynı anahtar matrisi kullanılır.
+    </p>
+
+    <ul>
+        <li>Aynı satırdaysa → sola kaydırılır.</li>
+        <li>Aynı sütundaysa → yukarı kaydırılır.</li>
+        <li>Dikdörtgen kuralı aynı şekilde uygulanır.</li>
+    </ul>
+
+    <p>
+        Şifre çözme sonrası eklenen dolgu harfleri (X) gerektiğinde çıkarılır.
+    </p>
+
+    <p>
+        Playfair Cipher, tek harfli frekans analizine karşı dayanıklıdır
+        ancak modern kriptografi için yeterli güvenliği sağlamaz.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =======================
+     FORM
+     ======================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Anahtar (Kelime):</label><br>
+    <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =======================
+     SONUÇ
+     ======================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =======================
+     GERİ
+     ======================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

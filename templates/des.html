@@ -2,31 +2,103 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>DES Şifreleme</title>
+    <title>DES (Data Encryption Standard)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .info-box {
+            background-color: #ffffff;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
-<h1>DES Şifreleme / Deşifreleme</h1>
+    <div class="info-box">
+        <h1>DES – Data Encryption Standard</h1>
 
-<form method="post">
-    <label>Metin</label>
-    <textarea name="text" required></textarea>
+        <p class="intro">
+            DES (Data Encryption Standard), simetrik anahtarlı bir şifreleme algoritmasıdır. 
+            Hem veriyi <strong>şifrelemek</strong> hem de <strong>çözmek</strong> için aynı gizli anahtar kullanılır.
+        </p>
 
-    <label>Anahtar (8 byte)</label>
-    <input type="text" name="key" placeholder="8 karakter">
+        <hr>
 
-    <button type="submit">Şifrele</button>
-</form>
+        <h2>Temel Özellikler</h2>
+        <ul>
+            <li>Simetrik anahtarlıdır</li>
+            <li>Blok şifreleme algoritmasıdır</li>
+            <li>Blok boyutu: <strong>64 bit</strong></li>
+            <li>Anahtar uzunluğu: 56 bit (parite bitleriyle 64 bit)</li>
+        </ul>
 
-{% if result %}
-<div class="result">
-    <h3>Sonuç</h3>
-    <p>{{ result }}</p>
-</div>
-{% endif %}
+        <hr>
 
-<a class="switch" href="/">Ana Menü</a>
+        <h2>DES Nasıl Çalışır?</h2>
+        <p>
+            DES, açık metni 64 bitlik bloklara ayırır ve her blok üzerinde <strong>16 tur</strong> uygular.
+            Her turda veri permütasyon ve substitution işlemlerinden geçer.
+        </p>
+
+        <h3>Bir DES turunda yapılan işlemler:</h3>
+        <ol>
+            <li><strong>Expansion</strong> – Sağ blok genişletilir</li>
+            <li><strong>Substitution</strong> – S-Box ile bitler değiştirilir</li>
+            <li><strong>Permutation</strong> – Bitler karıştırılır</li>
+            <li><strong>XOR</strong> – Tur anahtarı ile XOR işlemi yapılır</li>
+        </ol>
+
+        <hr>
+
+        <h2>DES Şifreleme & Deşifreleme Mantığı</h2>
+        <p>
+            DES’te şifreleme ve deşifreleme işlemleri <strong>aynı anahtarı</strong> kullanır. 
+            Deşifreleme, şifreleme adımlarının tersidir.
+        </p>
+
+        <pre>
+Açık Metin + Gizli Anahtar
+          ↓
+        DES Algoritması
+          ↓
+      Şifreli Metin
+        </pre>
+
+        <hr>
+
+        <h2>Güvenlik</h2>
+        <p>
+            DES günümüzde artık kırılması mümkün olduğu için kritik sistemlerde kullanılmaz. 
+            Bunun yerine daha güvenli algoritmalar (AES gibi) tercih edilir.
+        </p>
+
+        <ul>
+            <li>Geçmişte finans ve telekom sistemlerinde kullanılmıştır</li>
+            <li>Simetrik şifreleme mantığını öğrenmek için örnek olarak kullanılır</li>
+        </ul>
+
+        <hr>
+
+        <h2>Projede DES Kullanımı</h2>
+        <p>
+            Bu projede DES algoritması:
+        </p>
+        <ul>
+            <li>Kütüphane tabanlı (DES Lib)</li>
+            <li>Manuel (DES Manual)</li>
+        </ul>
+
+        <p>
+            Her iki yaklaşımın performans ve çıktı farkları 
+            proje dokümantasyonunda karşılaştırılmıştır.
+        </p>
+
+        <hr>
+
+        <a href="/" class="switch">← Ana Sayfaya Dön</a>
+    </div>
 
 </body>
 </html>

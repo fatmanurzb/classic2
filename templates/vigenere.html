@@ -6,26 +6,139 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
+
 <body>
-    <h1>Vigenere Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>Anahtar (Kelime):</label><br>
-        <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
-
-        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <p>{{ result }}</p>
-    </div>
+<h1>
+    Vigenère Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =========================
+     AÇIKLAMA ALANI
+     ========================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Vigenère Cipher, Caesar şifrelemesinin geliştirilmiş hâli olan
+        <b>polialfabetik</b> bir şifreleme algoritmasıdır.
+        Tek bir kaydırma yerine, birden fazla kaydırma kullanır.
+    </p>
+
+    <p>
+        Şifreleme işleminde bir <b>anahtar kelime</b> kullanılır.
+        Bu anahtar, metin uzunluğuna göre tekrar edilerek
+        her harf için farklı bir kaydırma değeri oluşturur.
+    </p>
+
+    <h3>Şifreleme Adımları</h3>
+    <ul>
+        <li>Metin ve anahtar yalnızca harflerden oluşacak şekilde hazırlanır.</li>
+        <li>Anahtar, metin uzunluğuna kadar tekrar edilir.</li>
+        <li>Her harf sayısal değere çevrilir (A=0, B=1, ..., Z=25).</li>
+        <li>Metin harfi ile anahtar harfi toplanır.</li>
+        <li>Sonuç mod 26 alınarak şifreli harf elde edilir.</li>
+    </ul>
+
+    <p>
+        <b>Matematiksel Gösterim:</b><br><br>
+        <code>
+            C = (P + K) mod 26
+        </code>
+        <br><br>
+        Burada;<br>
+        <b>P</b>: Düz metin harfi<br>
+        <b>K</b>: Anahtar harfi<br>
+        <b>C</b>: Şifreli harf
+    </p>
+
+    <p>
+        Vigenère Cipher, tek alfabeli şifrelere göre
+        frekans analizine karşı çok daha dayanıklıdır.
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde,
+        şifreleme sırasında kullanılan anahtar kelime
+        aynı şekilde tekrar edilir.
+    </p>
+
+    <p>
+        Her şifreli harf,
+        anahtar harfinin sayısal değeri çıkarılarak
+        orijinal hâline döndürülür.
+    </p>
+
+    <h3>Deşifreleme Adımları</h3>
+    <ul>
+        <li>Şifreli metin ve anahtar hazırlanır.</li>
+        <li>Anahtar metin uzunluğuna göre tekrar edilir.</li>
+        <li>Şifreli harften anahtar harf çıkarılır.</li>
+        <li>Sonuç mod 26 alınır.</li>
+        <li>Düz metin elde edilir.</li>
+    </ul>
+
+    <p>
+        <b>Matematiksel Gösterim:</b><br><br>
+        <code>
+            P = (C - K + 26) mod 26
+        </code>
+    </p>
+
+    <p>
+        Anahtar bilinmeden Vigenère Cipher’ın çözülmesi,
+        Caesar Cipher’a göre çok daha zordur.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =========================
+     FORM
+     ========================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Anahtar (Kelime):</label><br>
+    <input type="text" name="key" required value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =========================
+     SONUÇ
+     ========================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =========================
+     GERİ DÖN
+     ========================= -->
+<a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

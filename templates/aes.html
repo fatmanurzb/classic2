@@ -2,31 +2,124 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>AES Şifreleme</title>
+    <title>AES (Advanced Encryption Standard)</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .info-box {
+            background-color: #ffffff;
+            border-left: 5px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
 </head>
 <body>
 
-<h1>AES-128 Şifreleme / Deşifreleme</h1>
+    <div class="info-box">
+        <h1>AES – Advanced Encryption Standard</h1>
 
-<form method="post">
-    <label>Metin</label>
-    <textarea name="text" required></textarea>
+        <p class="intro">
+            AES (Advanced Encryption Standard), günümüzde en yaygın kullanılan
+            <strong>simetrik anahtarlı şifreleme algoritmasıdır</strong>. 
+            Hem veriyi şifrelemek hem de çözmek için aynı gizli anahtar kullanılır.
+        </p>
 
-    <label>Anahtar (16 byte)</label>
-    <input type="text" name="key" placeholder="16 karakter">
+        <hr>
 
-    <button type="submit">Şifrele</button>
-</form>
+        <h2>Temel Özellikler</h2>
+        <ul>
+            <li>Simetrik anahtarlıdır</li>
+            <li>Blok şifreleme algoritmasıdır</li>
+            <li>Blok boyutu: <strong>128 bit</strong></li>
+            <li>Anahtar uzunlukları:
+                <ul>
+                    <li>128 bit</li>
+                    <li>192 bit</li>
+                    <li>256 bit</li>
+                </ul>
+            </li>
+        </ul>
 
-{% if result %}
-<div class="result">
-    <h3>Sonuç</h3>
-    <p>{{ result }}</p>
-</div>
-{% endif %}
+        <hr>
 
-<a class="switch" href="/">Ana Menü</a>
+        <h2>AES Nasıl Çalışır?</h2>
+        <p>
+            AES, açık metni (plaintext) sabit boyutlu bloklara ayırır
+            ve her blok üzerinde birden fazla tur (round) uygular.
+            Her turda veri karmaşık matematiksel işlemlerden geçer.
+        </p>
+
+        <h3>Bir AES turunda yapılan işlemler:</h3>
+        <ol>
+            <li><strong>SubBytes</strong> – Byte değişimi (S-Box)</li>
+            <li><strong>ShiftRows</strong> – Satır kaydırma</li>
+            <li><strong>MixColumns</strong> – Sütun karıştırma</li>
+            <li><strong>AddRoundKey</strong> – Anahtar ile XOR işlemi</li>
+        </ol>
+
+        <p>
+            Anahtar uzunluğuna bağlı olarak tur sayısı değişir:
+        </p>
+        <ul>
+            <li>128 bit anahtar → 10 tur</li>
+            <li>192 bit anahtar → 12 tur</li>
+            <li>256 bit anahtar → 14 tur</li>
+        </ul>
+
+        <hr>
+
+        <h2>AES Şifreleme & Deşifreleme Mantığı</h2>
+        <p>
+            AES’te şifreleme ve deşifreleme işlemleri
+            <strong>aynı anahtarı</strong> kullanır.
+            Deşifreleme, şifreleme adımlarının tersidir.
+        </p>
+
+        <pre>
+Açık Metin + Gizli Anahtar
+          ↓
+      AES Algoritması
+          ↓
+      Şifreli Metin
+        </pre>
+
+        <hr>
+
+        <h2>Güvenlik</h2>
+        <p>
+            AES günümüzde kırılması pratikte mümkün olmayan
+            algoritmalardan biridir.
+            Doğru anahtar uzunluğu ve doğru çalışma modu kullanıldığında
+            yüksek güvenlik sağlar.
+        </p>
+
+        <ul>
+            <li>Askerî sistemlerde kullanılır</li>
+            <li>Banka uygulamalarında kullanılır</li>
+            <li>HTTPS, VPN, disk şifreleme sistemlerinde kullanılır</li>
+        </ul>
+
+        <hr>
+
+        <h2>Projede AES Kullanımı</h2>
+        <p>
+            Bu projede AES algoritması:
+        </p>
+        <ul>
+            <li>Kütüphane tabanlı (AES Lib)</li>
+            <li>Manuel (AES Manual)</li>
+        </ul>
+
+        <p>
+            Her iki yaklaşımın performans ve çıktı farkları
+            proje dokümantasyonunda ölçülerek karşılaştırılmıştır.
+        </p>
+
+        <hr>
+
+        <a href="/" class="switch">← Ana Sayfaya Dön</a>
+    </div>
 
 </body>
 </html>

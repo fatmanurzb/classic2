@@ -14,18 +14,16 @@
 
     <h1>Chat Sistemi</h1>
 
-    <div class="tab-buttons">
-        <button class="tab-btn">Klasik Chat</button>
-        <button class="tab-btn ">Secure Chat</button>
-    </div>
 
     <!-- Klasik Chat -->
     <div id="classicTab" class="chat-tab active">
         <div id="messages" class="chat-box"></div>
 
         <div class="input-row">
+            <div class="tab-buttons">
+                <button class="tab-btn">Klasik</button>
+            </div>
             <select id="cipher">
-                <option value="none">Şifresiz</option>
                 <option value="caesar">Caesar</option>
                 <option value="vigenere">Vigenere</option>
                 <option value="affine">Affine</option>
@@ -48,10 +46,12 @@
     <!-- Secure Chat -->
     <div id="secureTab" class="chat-tab">
         <div class="input-row">
+            <div class="tab-buttons">
+                <button class="tab-btn ">Modern</button>
+            </div>
             <select id="secureAlgo">
                 <option value="AES">AES</option>
                 <option value="DES">DES</option>
-                <option value="RSA">RSA (Key Exchange)</option>
                 <option value="AES_MANUAL">AES Manual</option>
                 <option value="DES_MANUAL">DES Manual</option>
             </select>

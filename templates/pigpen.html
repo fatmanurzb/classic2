@@ -1,27 +1,119 @@
 <!DOCTYPE html>
 <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Pigpen Cipher</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <h1>Pigpen Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Pigpen Cipher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-        <form method="POST">
-            <label>Metin:</label><br>
-            <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+<body>
 
-            <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-        </form>
+<h1>Pigpen Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
+    {% endif %}
+</h1>
 
-        {% if result %}
-        <div class="result">
-            <h2>Sonuç:</h2>
-            <p>{{ result }}</p>
-        </div>
+<!-- =======================
+     AÇIKLAMA ALANI
+     ======================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Pigpen Cipher, sembol tabanlı bir şifreleme yöntemidir ve tarihsel olarak
+        Tapınak Şövalyeleri ve masonik yazışmalarda kullanılmıştır.
+    </p>
+
+    <p>
+        Bu yöntemde her harf, önceden tanımlanmış özel bir sembol ile değiştirilir.
+        Harflerin kendisi doğrudan görünmez; bunun yerine sembolik karşılıkları kullanılır.
+    </p>
+
+    <p>
+        Bu uygulamada Pigpen alfabesi aşağıdaki gibi sembollere dönüştürülmektedir:
+    </p>
+
+    <pre class="table">
+A  → !      B → @      C → #      D → $      E → %
+F  → ^      G → &      H → *      I → (      J → )
+K  → -      L → =      M → +      N → [      O → ]
+P  → {      Q → }      R → ;      S → :      T → <
+U  → >      V → ?      W → /      X → //
+Y  → |      Z → ~
+    </pre>
+
+    <p>
+        <b>Örnek:</b><br>
+        Metin: HELLO<br>
+        H → * &nbsp; E → % &nbsp; L → = &nbsp; L → = &nbsp; O → ]<br>
+        Şifreli çıktı: <b>*%==]</b>
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde, semboller tekrar harf karşılıklarına dönüştürülür.
+        Bu işlem, şifreleme sırasında kullanılan sembol–harf eşlemesinin tersidir.
+    </p>
+
+    <p>
+        Her sembol, tanımlı Pigpen tablosundaki tek bir harfi temsil eder.
+        Bu sayede semboller okunabilir metne geri çevrilebilir.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        Şifreli Metin: *%==]<br>
+        Çözüm: HELLO
+    </p>
+
+    <p>
+        Pigpen Cipher, görsel gizleme sağlar ancak modern kriptografik güvenlik sunmaz.
+        Bu nedenle günümüzde daha çok eğitim ve gösterim amaçlı kullanılır.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =======================
+     FORM
+     ======================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
         {% endif %}
+    </button>
 
-        <a href="/" class="switch">← Geri dön</a>
-    </body>
+</form>
+
+<!-- =======================
+     SONUÇ
+     ======================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =======================
+     GERİ DÖN
+     ======================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
+</body>
 </html>

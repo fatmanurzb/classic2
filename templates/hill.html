@@ -1,30 +1,154 @@
 <!DOCTYPE html>
 <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Hill Cipher</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <h1>Hill Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+<head>
+    <meta charset="UTF-8">
+    <title>Hill Cipher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-        <form method="POST">
-            <label>Metin:</label><br>
-            <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+<body>
 
-            <label>Anahtar Matrisi (4 sayı, boşlukla ayrılmış):</label><br>
-            <input type="text" name="key" placeholder="örnek: 3 3 2 5" required value="{{ request.form.get('key', '') }}"><br>
+<h1>
+    Hill Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
+    {% endif %}
+</h1>
 
-            <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-        </form>
+<!-- =========================
+     AÇIKLAMA ALANI
+     ========================= -->
+<div class="info-box">
 
-        {% if result %}
-        <div class="result">
-            <h2>Sonuç:</h2>
-            <p>{{ result }}</p>
-        </div>
+{% if mode == 'encrypt' %}
+
+    <p>
+        Hill Cipher, doğrusal cebire dayanan
+        <b>çok harfli (poligrafik)</b> bir şifreleme algoritmasıdır.
+        Bu uygulamada yalnızca <b>2×2 anahtar matrisi</b> kullanılmaktadır.
+    </p>
+
+    <p>
+        Şifreleme işleminde metin,
+        ikişer harflik bloklara ayrılır.
+        Her harf, alfabedeki konumuna göre
+        sayısal değere dönüştürülür (A=0, B=1, ..., Z=25).
+    </p>
+
+    <h3>2×2 Hill Şifreleme Adımları</h3>
+    <ul>
+        <li>Metin ikili harf gruplarına ayrılır.</li>
+        <li>Her harf sayıya dönüştürülür.</li>
+        <li>2×2 anahtar matrisi ile çarpım yapılır.</li>
+        <li>Sonuçlar mod 26 alınır.</li>
+        <li>Elde edilen sayılar tekrar harfe çevrilir.</li>
+    </ul>
+
+    <p>
+        <b>Matematiksel Gösterim:</b><br><br>
+
+        Anahtar matrisi:
+        <pre>
+        | a  b |
+        | c  d |
+        </pre>
+
+        Harf bloğu:
+        <pre>
+        | x |
+        | y |
+        </pre>
+
+        Şifreleme:
+        <pre>
+        | a b | × | x |  mod 26
+        | c d |   | y |
+        </pre>
+    </p>
+
+    <p>
+        Bu algoritma, anahtar matrisi bilinmeden
+        çözülmesi oldukça zor olan
+        klasik şifreleme yöntemlerinden biridir.
+    </p>
+
+{% else %}
+
+    <p>
+        Hill Cipher deşifreleme işleminde,
+        kullanılan anahtar matrisinin
+        <b>mod 26’ya göre tersinin</b> alınması gerekir.
+    </p>
+
+    <p>
+        Eğer anahtar matrisin determinantı
+        26 ile aralarında asal değilse,
+        matrisin tersi alınamaz ve
+        deşifreleme mümkün olmaz.
+    </p>
+
+    <h3>2×2 Hill Deşifreleme Adımları</h3>
+    <ul>
+        <li>Anahtar matrisin determinantı hesaplanır.</li>
+        <li>Determinantın mod 26’ya göre tersi bulunur.</li>
+        <li>Ters anahtar matrisi oluşturulur.</li>
+        <li>Şifreli metin ikili gruplara ayrılır.</li>
+        <li>Matris çarpımı ile düz metin elde edilir.</li>
+    </ul>
+
+    <p>
+        Bu nedenle Hill Cipher,
+        matematiksel altyapısı güçlü olan
+        klasik şifreleme algoritmalarından biridir.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =========================
+     FORM
+     ========================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Anahtar Matrisi (2×2 – 4 sayı):</label><br>
+    <input type="text"
+           name="key"
+           placeholder="Örnek: 3 3 2 5"
+           required
+           value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
         {% endif %}
+    </button>
 
-        <a href="/" class="switch">← Geri dön</a>
-    </body>
+</form>
+
+<!-- =========================
+     SONUÇ
+     ========================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =========================
+     GERİ DÖN
+     ========================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
+</body>
 </html>

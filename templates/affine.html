@@ -5,31 +5,128 @@
     <title>Affine Cipher</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
-
 </head>
+
 <body>
-    <h1>Affine Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>a Değeri:</label><br>
-        <input type="number" name="a" required value="{{ request.form.get('a', '') }}"><br>
-
-        <label>b Değeri:</label><br>
-        <input type="number" name="b" required value="{{ request.form.get('b', '') }}"><br>
-
-        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <p>{{ result }}</p>
-    </div>
+<h1>Affine Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =======================
+     AÇIKLAMA ALANI
+     ======================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Affine cipher, Caesar şifrelemesinin genelleştirilmiş ve daha güvenli
+        bir versiyonudur. Her harf, matematiksel bir fonksiyon kullanılarak
+        şifrelenir.
+    </p>
+
+    <p>
+        Şifreleme formülü aşağıdaki gibidir:
+    </p>
+
+    <p class="formula">
+        <b>E(x) = (a · x + b) mod 26</b>
+    </p>
+
+    <ul>
+        <li><b>x</b>: Harfin alfabedeki sayısal karşılığı</li>
+        <li><b>a</b>: Çarpan katsayısı (26 ile aralarında asal olmalıdır)</li>
+        <li><b>b</b>: Kaydırma değeri</li>
+    </ul>
+
+    <p>
+        <b>Önemli:</b> Eğer <b>a</b> değeri 26 ile aralarında asal değilse,
+        deşifreleme mümkün olmaz.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        a = 5, b = 8<br>
+        Metin: MERHABA<br>
+        Şifreli Metin: RCLFIPF
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işlemi, şifrelemede kullanılan <b>a</b> değerinin
+        modüler tersinin alınması ile gerçekleştirilir.
+    </p>
+
+    <p class="formula">
+        <b>D(x) = a⁻¹ · (x − b) mod 26</b>
+    </p>
+
+    <p>
+        Burada <b>a⁻¹</b>, <b>a</b> sayısının 26 modülüne göre tersidir.
+    </p>
+
+    <p>
+        <b>Not:</b> Eğer a⁻¹ mevcut değilse (yani a ve 26 aralarında asal değilse),
+        çözme işlemi yapılamaz.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        Şifreli Metin: RCLFIPF<br>
+        a = 5, b = 8<br>
+        Çözülmüş Metin: MERHABA
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =======================
+     FORM
+     ======================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>a Değeri:</label><br>
+    <input type="number" name="a" required value="{{ request.form.get('a', '') }}"><br>
+
+    <label>b Değeri:</label><br>
+    <input type="number" name="b" required value="{{ request.form.get('b', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =======================
+     SONUÇ
+     ======================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =======================
+     GERİ DÖN
+     ======================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

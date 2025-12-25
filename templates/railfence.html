@@ -4,28 +4,125 @@
     <meta charset="UTF-8">
     <title>Rail Fence Cipher</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <script src="{{ url_for('static', filename='main.js') }}" defer></script>
 </head>
+
 <body>
-    <h1>Rail Fence Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
 
-    <form method="POST">
-        <label>Metin:</label><br>
-        <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
-
-        <label>Katman Sayısı (Sayı):</label><br>
-        <input type="number" name="key" required value="{{ request.form.get('key', '') }}"><br>
-
-        <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-    </form>
-
-    {% if result %}
-    <div class="result">
-        <h2>Sonuç:</h2>
-        <p>{{ result }}</p>
-    </div>
+<h1>
+    Rail Fence Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
     {% endif %}
+</h1>
 
-    <a href="{% if mode == 'encrypt' %}/ {% else %}/server{% endif %}" class="switch">← Geri dön</a>
+<!-- =========================
+     AÇIKLAMA ALANI
+     ========================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Rail Fence Cipher, klasik bir <b>yer değiştirme (transposition)</b>
+        şifreleme algoritmasıdır.
+        Bu yöntemde harflerin kendisi değişmez,
+        sadece metin içerisindeki <b>konumları</b> değiştirilir.
+    </p>
+
+    <p>
+        Metin, belirlenen katman (ray) sayısına göre
+        <b>zikzak (zig-zag)</b> şeklinde satırlara yerleştirilir.
+        Daha sonra satırlar sırayla okunarak şifreli metin elde edilir.
+    </p>
+
+    <h3>Şifreleme Adımları</h3>
+    <ul>
+        <li>Kullanıcı katman (ray) sayısını belirler.</li>
+        <li>Metin, yukarıdan aşağıya ve aşağıdan yukarıya zikzak şekilde yazılır.</li>
+        <li>Her katman soldan sağa okunur.</li>
+        <li>Okunan satırlar birleştirilerek şifreli metin oluşturulur.</li>
+    </ul>
+
+    <p>
+        <b>Örnek:</b><br>
+        Metin: <code>HELLOWORLD</code><br>
+        Katman sayısı: <code>3</code><br><br>
+        H&nbsp;&nbsp;&nbsp;&nbsp;O&nbsp;&nbsp;&nbsp;&nbsp;L<br>
+        &nbsp;E&nbsp;L&nbsp;W&nbsp;R&nbsp;D<br>
+        &nbsp;&nbsp;L&nbsp;&nbsp;&nbsp;&nbsp;O<br><br>
+        Şifreli çıktı: <code>HOL ELWRD LO</code>
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde,
+        şifreli metnin hangi harfinin hangi katmana ait olduğu
+        önce hesaplanır.
+    </p>
+
+    <p>
+        Ardından harfler,
+        orijinal zikzak düzenine yerleştirilerek
+        metin tekrar okunur.
+    </p>
+
+    <h3>Deşifreleme Adımları</h3>
+    <ul>
+        <li>Katman sayısına göre zikzak desen belirlenir.</li>
+        <li>Şifreli metin, katmanlara uygun şekilde dağıtılır.</li>
+        <li>Zikzak izlenerek orijinal metin okunur.</li>
+    </ul>
+
+    <p>
+        Rail Fence algoritması basit yapısına rağmen,
+        metnin doğrudan okunmasını zorlaştırır ve
+        transposition şifrelerine iyi bir örnek oluşturur.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =========================
+     FORM
+     ========================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <label>Katman Sayısı (Ray Sayısı):</label><br>
+    <input type="number" name="key" required value="{{ request.form.get('key', '') }}"><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
+        {% endif %}
+    </button>
+
+</form>
+
+<!-- =========================
+     SONUÇ
+     ========================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =========================
+     GERİ DÖN
+     ========================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
 </body>
 </html>

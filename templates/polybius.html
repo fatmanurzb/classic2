@@ -1,27 +1,123 @@
 <!DOCTYPE html>
-    <html lang="tr">
-    <head>
-        <meta charset="UTF-8">
-        <title>Polybius Cipher</title>
-        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    </head>
-    <body>
-        <h1>Polybius Cipher - {% if mode == 'encrypt' %}Şifreleme{% else %}Deşifreleme{% endif %}</h1>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Polybius Cipher</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
 
-        <form method="POST">
-            <label>Metin:</label><br>
-            <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+<body>
 
-            <button type="submit" class="btn">{% if mode == 'encrypt' %}Şifrele{% else %}Deşifrele{% endif %}</button>
-        </form>
+<h1>Polybius Cipher –
+    {% if mode == 'encrypt' %}
+        Şifreleme
+    {% else %}
+        Deşifreleme
+    {% endif %}
+</h1>
 
-        {% if result %}
-        <div class="result">
-            <h2>Sonuç:</h2>
-            <p>{{ result }}</p>
-        </div>
+<!-- =======================
+     AÇIKLAMA ALANI
+     ======================= -->
+<div class="info-box">
+
+{% if mode == 'encrypt' %}
+
+    <p>
+        Polybius Cipher, antik Yunan dönemine dayanan bir şifreleme yöntemidir.
+        Harfleri doğrudan değiştirmek yerine, her harfi bir sayı çifti ile temsil eder.
+    </p>
+
+    <p>
+        Alfabe 5×5’lik bir tabloya yerleştirilir. 26 harf olduğu için
+        <b>I</b> ve <b>J</b> harfleri aynı hücrede gösterilir.
+    </p>
+
+    <pre class="table">
+      1  2  3  4  5
+    1 A  B  C  D  E
+    2 F  G  H  I/J K
+    3 L  M  N  O  P
+    4 Q  R  S  T  U
+    5 V  W  X  Y  Z
+    </pre>
+
+    <p>
+        Her harf, bulunduğu <b>satır</b> ve <b>sütun</b> numarası ile
+        iki basamaklı bir sayıya dönüştürülür.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        A → 11<br>
+        B → 12<br>
+        K → 25<br>
+        Metin: HELLO → 23 15 31 31 34
+    </p>
+
+{% else %}
+
+    <p>
+        Deşifreleme işleminde, iki basamaklı sayı çiftleri tekrar
+        Polybius karesine bakılarak harflere dönüştürülür.
+    </p>
+
+    <p>
+        İlk rakam <b>satırı</b>, ikinci rakam <b>sütunu</b> temsil eder.
+    </p>
+
+    <p>
+        <b>Örnek:</b><br>
+        23 → H<br>
+        15 → E<br>
+        31 → L<br>
+        34 → O<br>
+        Çözülmüş Metin: HELLO
+    </p>
+
+    <p>
+        <b>Not:</b> I ve J harfleri aynı hücrede olduğu için,
+        çözüm sırasında bu iki harf ayırt edilemez.
+    </p>
+
+{% endif %}
+
+</div>
+
+<!-- =======================
+     FORM
+     ======================= -->
+<form method="POST">
+
+    <label>Metin:</label><br>
+    <textarea name="text" required>{{ request.form.get('text', '') }}</textarea><br>
+
+    <button type="submit" class="btn">
+        {% if mode == 'encrypt' %}
+            Şifrele
+        {% else %}
+            Deşifrele
         {% endif %}
+    </button>
 
-        <a href="/" class="switch">← Geri dön</a>
-    </body>
+</form>
+
+<!-- =======================
+     SONUÇ
+     ======================= -->
+{% if result %}
+<div class="result">
+    <h2>Sonuç</h2>
+    <p>{{ result }}</p>
+</div>
+{% endif %}
+
+<!-- =======================
+     GERİ DÖN
+     ======================= -->
+<a href="{% if mode == 'encrypt' %}/{% else %}/server{% endif %}" class="switch">
+    ← Geri dön
+</a>
+
+</body>
 </html>

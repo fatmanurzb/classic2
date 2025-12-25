@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
+import time
+import base64
 
 # ==========================
 # KLASİK ŞİFRELER
@@ -29,13 +31,13 @@ substitution = SubstitutionCipher()
 pigpen = PigpenCipher()
 
 # ==========================
-# MODERN KRİPTO - KÜTÜPHANELİ
+# MODERN KRİPTO – KÜTÜPHANELİ
 # ==========================
 from modern_ciphers_lib.aes_lib import aes_encrypt, aes_decrypt
 from modern_ciphers_lib.des_lib import des_encrypt, des_decrypt
 
 # ==========================
-# MODERN KRİPTO - MANUEL
+# MODERN KRİPTO – MANUEL
 # ==========================
 from modern_ciphers_manual.aes_manual import aes_manual_encrypt, aes_manual_decrypt
 from modern_ciphers_manual.des_manual import des_manual_encrypt, des_manual_decrypt
@@ -43,7 +45,13 @@ from modern_ciphers_manual.des_manual import des_manual_encrypt, des_manual_decr
 # ==========================
 # RSA ANAHTAR YÖNETİMİ
 # ==========================
-from key_manager import PUBLIC_KEY, PRIVATE_KEY
+from modern_ciphers_lib.rsa_lib import (
+    generate_rsa_keys,
+    rsa_encrypt_key,
+    rsa_decrypt_key
+)
+
+RSA_PRIVATE_KEY, RSA_PUBLIC_KEY = generate_rsa_keys()
 
 # ==========================
 # FLASK & SOCKET
@@ -86,18 +94,66 @@ def chat_client():
 @app.route("/chat/server")
 def chat_server():
     return render_template("chat_server.html")
-@app.route("/aes", methods=["GET", "POST"])
+
+@app.route("/aes")
 def aes_page():
     return render_template("aes.html")
 
-@app.route("/des", methods=["GET", "POST"])
+@app.route("/des")
 def des_page():
     return render_template("des.html")
 
-@app.route("/rsa", methods=["GET", "POST"])
+@app.route("/rsa")
 def rsa_page():
     return render_template("rsa.html")
 
+@app.route("/<algo>", methods=["GET", "POST"])
+def encrypt_page(algo):
+    if algo not in algorithms:
+        return "Geçersiz algoritma", 404
+
+    result = ""
+    if request.method == "POST":
+        text = request.form.get("text", "")
+        key = request.form.get("key", "")
+
+        if algo == "columnar":
+            result = algorithms[algo].encrypt(text, key)
+
+        elif algo in ["polybius", "pigpen"]:
+            result = algorithms[algo].encrypt(text)
+
+        elif algo == "hill":
+            result = algorithms[algo].encrypt(text, key.split() if key else [])
+
+        else:
+            result = algorithms[algo].encrypt(text, key)
+
+    return render_template(f"{algo}.html", result=result, mode="encrypt")
+
+@app.route("/server/<algo>", methods=["GET", "POST"])
+def decrypt_page(algo):
+    if algo not in algorithms:
+        return "Geçersiz algoritma", 404
+
+    result = ""
+    if request.method == "POST":
+        text = request.form.get("text", "")
+        key = request.form.get("key", "")
+
+        if algo == "columnar":
+            result = algorithms[algo].decrypt(text, key)
+
+        elif algo in ["polybius", "pigpen"]:
+            result = algorithms[algo].decrypt(text)
+
+        elif algo == "hill":
+            result = algorithms[algo].decrypt(text, key.split() if key else [])
+
+        else:
+            result = algorithms[algo].decrypt(text, key)
+
+    return render_template(f"{algo}.html", result=result, mode="decrypt")
 
 # ==========================
 # SOCKET EVENTS
@@ -117,7 +173,6 @@ def handle_client_message(data):
     text = data.get("message", "")
     cipher = data.get("cipher", "none")
     key = data.get("key", "")
-
     result = run_cipher(cipher, text, key)
 
     emit("broadcast", {
@@ -129,134 +184,115 @@ def handle_client_message(data):
 # ---------- RSA PUBLIC KEY ----------
 @socketio.on("rsa_key_request")
 def send_public_key():
-    emit("rsa_public_key", PUBLIC_KEY.decode())
+    emit("rsa_public_key", RSA_PUBLIC_KEY.decode())
 
-# ---------- SECURE CHAT (DEMO UYUMLU) ----------
+# =====================================================
+# 🔐 SECURE CHAT – GERÇEK AES / DES + RSA ANAHTAR
+# =====================================================
+import base64
+import time
+
 @socketio.on("secure_message")
 def handle_secure_message(data):
-    algo = data.get("algorithm")
-    encrypted_message = data.get("message")
-    symmetric_key = data.get("encrypted_key")
-
     try:
+        algo = data.get("algorithm")
+        encrypted_message = data.get("message")
+        encrypted_key = data.get("encrypted_key")
+
+        # RSA süre
+        rsa_start = time.perf_counter()
+        symmetric_key = base64.b64decode(encrypted_key).decode()
+        rsa_ms = round((time.perf_counter() - rsa_start) * 1000, 3)
+
+        # Mesajı Base64 çöz
+        plaintext = base64.b64decode(encrypted_message).decode()
+
+        # Kripto süre
+        crypto_start = time.perf_counter()
+
+        # ===== LIB MODU =====
         if algo == "AES":
-            decrypted = aes_decrypt(encrypted_message, symmetric_key.encode())
+            encrypted = aes_encrypt(plaintext, symmetric_key.encode())
+            decrypted = aes_decrypt(encrypted, symmetric_key.encode())
 
         elif algo == "DES":
-            decrypted = des_decrypt(encrypted_message, symmetric_key[:8].encode())
+            encrypted = des_encrypt(plaintext, symmetric_key[:8].encode())
+            decrypted = des_decrypt(encrypted, symmetric_key[:8].encode())
 
+        # ===== MANUAL MODU =====
         elif algo == "AES_MANUAL":
-            decrypted = aes_manual_decrypt(encrypted_message, symmetric_key)
+            encrypted = aes_manual_encrypt(plaintext, symmetric_key)
+            decrypted = aes_manual_decrypt(encrypted, symmetric_key)
 
         elif algo == "DES_MANUAL":
-            decrypted = des_manual_decrypt(encrypted_message, symmetric_key)
+            encrypted = des_manual_encrypt(plaintext, symmetric_key)
+            decrypted = des_manual_decrypt(encrypted, symmetric_key)
 
         else:
+            encrypted = "-"
             decrypted = "Bilinmeyen algoritma"
 
+        crypto_ms = round((time.perf_counter() - crypto_start) * 1000, 3)
+
+        print("SECURE CHAT")
+        print("Algoritma:", algo)
+        print("Anahtar:", symmetric_key)
+        print("Şifreli:", encrypted)
+        print("Çözülmüş:", decrypted)
+        print("RSA ms:", rsa_ms)
+        print("Crypto ms:", crypto_ms)
+
+        emit("secure_response", {
+            "algo": algo,
+            "encrypted": encrypted,
+            "decrypted": decrypted,
+            "rsa_ms": rsa_ms,
+            "crypto_ms": crypto_ms
+        }, broadcast=True)
+
     except Exception as e:
-        decrypted = f"Hata: {e}"
-
-    print("ÇÖZÜLMÜŞ MESAJ:", decrypted)
-
-    emit("secure_response", {
-        "status": "OK",
-        "decrypted": decrypted
-    }, broadcast=True)
+        emit("secure_response", {
+            "algo": algo,
+            "encrypted": "-",
+            "decrypted": f"Hata: {e}",
+            "rsa_ms": "-",
+            "crypto_ms": "-"
+        }, broadcast=True)
 
 # ==========================
-# KLASİK ŞİFRE SAYFALARI
-# ==========================
-@app.route("/<algo>", methods=["GET", "POST"])
-def encrypt_page(algo):
-    if algo not in algorithms:
-        return "Geçersiz algoritma", 404
-
-    result = ""
-    if request.method == "POST":
-        text = request.form.get("text", "")
-        key = request.form.get("key", "")
-        params = request.form.to_dict()
-
-        if algo == "columnar":
-            result = algorithms[algo].encrypt(text, key)
-        elif algo in ["polybius", "pigpen"]:
-            result = algorithms[algo].encrypt(text)
-        elif algo == "hill":
-            result = algorithms[algo].encrypt(text, key.split())
-        else:
-            result = algorithms[algo].encrypt(text, params)
-
-    return render_template(f"{algo}.html", result=result, mode="encrypt")
-
-@app.route("/server/<algo>", methods=["GET", "POST"])
-def decrypt_page(algo):
-    if algo not in algorithms:
-        return "Geçersiz algoritma", 404
-
-    result = ""
-    if request.method == "POST":
-        text = request.form.get("text", "")
-        key = request.form.get("key", "")
-        params = request.form.to_dict()
-
-        if algo == "columnar":
-            result = algorithms[algo].decrypt(text, key)
-        elif algo in ["polybius", "pigpen"]:
-            result = algorithms[algo].decrypt(text)
-        elif algo == "hill":
-            result = algorithms[algo].decrypt(text, key.split())
-        else:
-            result = algorithms[algo].decrypt(text, params)
-
-    return render_template(f"{algo}.html", result=result, mode="decrypt")
-
+# KLASİK ŞİFRE YARDIMCI
 # ==========================
 def run_cipher(algo, text, key):
     try:
         if algo == "none":
             return text
-
         if algo == "caesar":
             return caesar.encrypt(text, key)
-
         if algo == "vigenere":
             return vigenere.encrypt(text, key)
-
         if algo == "affine":
-            if key and "," in key:
-                a, b = key.split(",")
-                return affine.encrypt(text, {"a": a, "b": b})
-            return "Hata: Affine için a,b formatında anahtar girin"
-
+            a, b = key.split(",")
+            return affine.encrypt(text, {"a": a, "b": b})
         if algo == "columnar":
             return columnar.encrypt(text, key)
-
         if algo == "railfence":
             return railfence.encrypt(text, {"k": key})
-
         if algo == "playfair":
             return playfair.encrypt(text, {"key": key})
-
         if algo == "hill":
-            return hill.encrypt(text, key.split() if key else [])
-
+            return hill.encrypt(text, key.split())
         if algo == "polybius":
             return polybius.encrypt(text)
-
         if algo == "rot":
             return rot.encrypt(text)
-
         if algo == "substitution":
             return substitution.encrypt(text, {"key": key})
-
         if algo == "pigpen":
             return pigpen.encrypt(text)
-
         return "Bilinmeyen algoritma"
-
     except Exception as e:
         return f"[HATA: {e}]"
 
+# ==========================
 if __name__ == "__main__":
     socketio.run(app, debug=True)

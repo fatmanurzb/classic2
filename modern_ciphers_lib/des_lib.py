@@ -1,14 +1,28 @@
 from Crypto.Cipher import DES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
 import base64
 
-def generate_key():
-    return b"8bytekey"  # 8 byte
+def des_encrypt(plaintext: str, key: bytes) -> str:
+    if len(key) != 8:
+        raise ValueError("DES key must be exactly 8 bytes")
 
-def des_encrypt(msg, key):
-    cipher = DES.new(key, DES.MODE_ECB)
-    padded = msg + " " * (8 - len(msg) % 8)
-    return base64.b64encode(cipher.encrypt(padded.encode())).decode()
+    iv = get_random_bytes(8)
+    cipher = DES.new(key, DES.MODE_CBC, iv)
+    ciphertext = cipher.encrypt(pad(plaintext.encode(), 8))
 
-def des_decrypt(enc_msg, key):
-    cipher = DES.new(key, DES.MODE_ECB)
-    return cipher.decrypt(base64.b64decode(enc_msg)).decode().strip()
+    return base64.b64encode(iv + ciphertext).decode()
+
+
+def des_decrypt(ciphertext_b64: str, key: bytes) -> str:
+    if len(key) != 8:
+        raise ValueError("DES key must be exactly 8 bytes")
+
+    raw = base64.b64decode(ciphertext_b64)
+    iv = raw[:8]
+    ciphertext = raw[8:]
+
+    cipher = DES.new(key, DES.MODE_CBC, iv)
+    plaintext = unpad(cipher.decrypt(ciphertext), 8)
+
+    return plaintext.decode()
