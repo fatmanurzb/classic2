@@ -16,21 +16,21 @@
     <div class="card-grid">
 
         <a class="card" href="{{ url_for('decrypt_page', algo='caesar') }}">Caesar Cipher</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='substitution') }}">Substitution</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='affine') }}">Affine</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='vigenere') }}">Vigenère</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='playfair') }}">Playfair</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='railfence') }}">Rail Fence</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='rot') }}">ROT</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='columnar') }}">Columnar</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='polybius') }}">Polybius</a>
-        <a class="card" href="{{ url_for('decrypt_page', algo='pigpen') }}">Pigpen</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='substitution') }}">Substitution Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='affine') }}">Affine Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='vigenere') }}">Vigenère Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='playfair') }}">Playfair Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='railfence') }}">Rail Fence Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='rot') }}">ROT Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='columnar') }}">Columnar Transposition Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='polybius') }}">Polybius Cipher</a>
+        <a class="card" href="{{ url_for('decrypt_page', algo='pigpen') }}">Pigpen Cipher</a>
         <a class="card" href="{{ url_for('decrypt_page', algo='hill') }}">Hill Cipher</a>
 
     </div>
 
     <div class="bottom-links">
-        <a class="btn-secondary" href="{{ url_for('chat_client') }}">Chat’e Git</a>
+        <a class="btn-secondary" href="{{ url_for('chat_server') }}">Chat’e Git</a>
         <a class="btn-secondary" href="{{ url_for('index_client') }}">Şifrelemelere Git</a>
     </div>
 </div>

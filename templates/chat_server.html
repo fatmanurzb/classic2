@@ -2,24 +2,58 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Server Chat</title>
-
+    <title>Chat - Server</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="{{ url_for('static', filename='main.js') }}" defer></script>
-    <script src="{{ url_for('static', filename='chat.js') }}" defer></script>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='chat_server.js') }}" defer></script>
 </head>
 <body>
 
-    <h1>Sunucu Chat Paneli</h1>
+<div class="chat-container">
 
-    <p>
-    Bu panel, istemciden gelen mesajları ve çözümlenmiş içerikleri
-    izlemek amacıyla kullanılır.
-    </p>
+    <h1>Chat Sistemi</h1>
 
-    <div id="messages" class="chat-box"></div>
+
+    <!-- Klasik Chat -->
+    <div id="classicTab" class="chat-tab active">
+        <div id="messages" class="chat-box"></div>
+
+        <div class="input-row">
+            <div class="tab-buttons">
+                <button class="tab-btn">Klasik</button>
+            </div>
+            <select id="cipher">
+                <option value="caesar">Caesar</option>
+                <option value="vigenere">Vigenere</option>
+                <option value="affine">Affine</option>
+                <option value="columnar">Columnar</option>
+                <option value="railfence">RailFence</option>
+                <option value="playfair">Playfair</option>
+                <option value="hill">Hill</option>
+                <option value="polybius">Polybius</option>
+                <option value="rot">ROT</option>
+                <option value="substitution">Substitution</option>
+                <option value="pigpen">Pigpen</option>
+            </select>
+
+            <input id="keyInput" type="text" placeholder="Anahtar / Shift / Parametre">
+            <input id="msgInput" type="text" placeholder="Mesaj yaz...">
+            <button id="sendBtn" class="btn-primary">Gönder</button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+function openTab(tab) {
+    document.querySelectorAll('.chat-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+
+    document.getElementById(tab).classList.add('active');
+    event.currentTarget.classList.add('active');
+}
+</script>
 
 </body>
 </html>

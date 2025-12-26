@@ -259,6 +259,40 @@ def handle_secure_message(data):
             "crypto_ms": "-"
         }, broadcast=True)
 
+# ==========================================
+# SADECE SERVER CHAT İÇİN DEŞİFRELEME
+# ==========================================
+@socketio.on("server_decrypt_message")
+def handle_server_decrypt(data):
+    text = data.get("message", "")
+    cipher = data.get("cipher", "")
+    key = data.get("key", "")
+
+    try:
+        if cipher not in algorithms:
+            result = "Geçersiz algoritma"
+        else:
+            if cipher == "columnar":
+                result = algorithms[cipher].decrypt(text, key)
+
+            elif cipher in ["polybius", "pigpen"]:
+                result = algorithms[cipher].decrypt(text)
+
+            elif cipher == "hill":
+                result = algorithms[cipher].decrypt(text, key.split() if key else [])
+
+            else:
+                result = algorithms[cipher].decrypt(text, key)
+
+    except Exception as e:
+        result = f"Hata: {e}"
+
+    emit("server_decrypt_response", {
+        "cipher": cipher,
+        "encrypted": text,
+        "decrypted": result
+    }, broadcast=True)
+
 # ==========================
 # KLASİK ŞİFRE YARDIMCI
 # ==========================
@@ -284,7 +318,7 @@ def run_cipher(algo, text, key):
         if algo == "polybius":
             return polybius.encrypt(text)
         if algo == "rot":
-            return rot.encrypt(text)
+            return rot.decrypt(text, key)
         if algo == "substitution":
             return substitution.encrypt(text, {"key": key})
         if algo == "pigpen":
